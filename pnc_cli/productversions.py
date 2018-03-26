@@ -1,6 +1,7 @@
 import argparse
 
 from argh import arg
+from argh import named
 from six import iteritems
 
 import pnc_cli.utils as utils
@@ -15,6 +16,8 @@ products_api = ProductsApi(uc.user.get_api_client())
 
 __author__ = 'thauser'
 
+namespace_kwargs = {'title': 'Product versions commands',
+                    'description': 'Commands related to Product versions'}
 
 def create_product_version_object(**kwargs):
     created_version = swagger_client.ProductVersionRest()
@@ -31,6 +34,7 @@ def version_exists_for_product(id, version):
         return False
 
 
+@named("list")
 @arg("-p", "--page-size", help="Limit the amount of build records returned")
 @arg("--page-index", help="Select the index of page", type=int)
 @arg("-s", "--sort", help="Sorting RSQL")
@@ -45,6 +49,7 @@ def list_product_versions(page_size=200, page_index=0, sort="", q=""):
         return utils.format_json_list(response.content)
 
 
+@named("create")
 @arg("product_id", help="ID of product to add a version to", type=types.existing_product_id)
 @arg("version", help="Version to add", type=types.valid_version_two_digits)
 @arg("-cm", "--current-product-milestone-id",
@@ -84,6 +89,7 @@ def create_product_version_raw(product_id, version, **kwargs):
         return response.content
 
 
+@named("get")
 @arg("id", help="ID of the ProductVersion to retrieve", type=types.existing_product_version)
 def get_product_version(id):
     """
@@ -100,6 +106,7 @@ def get_product_version_raw(id):
         return response.content
 
 
+@named("update")
 # TODO: how should constraints be defined? Can a new productId be specified?
 @arg("id", help="ID of the ProductVersion to update.", type=types.existing_product_version)
 @arg("-pid", "--product-id", help="ID of product to add a version to", type=types.existing_product_id)
@@ -135,3 +142,22 @@ def update_product_version(id, **kwargs):
                                       body=to_update)
     if response:
         return utils.format_json(response.content)
+
+
+@named("list-by-build-configuration")
+@arg("-i", "--id", help="ID of the BuildConfiguration to list ProductVersions for.", type=types.existing_bc_id)
+@arg("-n", "--name", help="Name of the BuildConfiguration to list ProductVersions for.", type=types.existing_bc_name)
+@arg("-p", "--page-size", help="Limit the amount of build records returned", type=int)
+@arg("--page-index", help="Select the index of page", type=int)
+@arg("-s", "--sort", help="Sorting RSQL")
+@arg("-q", help="RSQL query")
+def list_product_versions_for_build_configuration(id=None, name=None, page_size=200, page_index=0, sort="", q=""):
+    """
+    List all ProductVersions associated with a BuildConfiguration
+    """
+    found_id = common.set_id(configs_api, id, name)
+    response = utils.checked_api_call(configs_api, 'get_product_versions', id=found_id, page_size=page_size,
+                                      page_index=page_index, sort=sort,
+                                      q=q)
+    if response:
+        return utils.format_json_list(response.content)

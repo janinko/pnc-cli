@@ -1,6 +1,7 @@
 import logging
 
 from argh import arg
+from argh import named
 from six import iteritems
 
 import json
@@ -18,6 +19,8 @@ import sys
 sets_api = BuildconfigurationsetsApi(uc.user.get_api_client())
 configs_api = BuildconfigurationsApi(uc.user.get_api_client())
 
+namespace_kwargs = {'title': 'Build group configurations commands',
+                    'description': 'Commands related to build group configurations'}
 
 def _create_build_config_set_object(**kwargs):
     created_build_config_set = swagger_client.BuildConfigurationSetRest()
@@ -33,6 +36,7 @@ def list_build_configuration_sets_raw(page_size=200, page_index=0, sort="", q=""
     if response:
         return response.content
 
+@named("list")
 @arg("-p", "--page-size", help="Limit the amount of build records returned", type=int)
 @arg("--page-index", help="Select the index of page", type=int)
 @arg("-s", "--sort", help="Sorting RSQL")
@@ -56,6 +60,7 @@ def create_build_configuration_set_raw(**kwargs):
         return response.content
 
 
+@named("create")
 @arg("name", help="Name for the new BuildConfigurationSet.", type=types.unique_bc_set_name)
 @arg("-pvi", "--product-version-id",
      help="ID of the product version to associate this BuildConfigurationSet.",
@@ -80,6 +85,7 @@ def get_build_configuration_set_raw(id=None, name=None):
     if response:
         return response.content
 
+@named("get")
 @arg("-id", "--id", help="ID of the BuildConfigurationSet to retrieve", type=types.existing_bc_set_id)
 @arg("-n", "--name", help="Name of the BuildConfigurationSet to retrieve", type=types.existing_bc_set_name)
 def get_build_configuration_set(id=None, name=None):
@@ -103,6 +109,7 @@ def update_build_configuration_set_raw(id, **kwargs):
         return response.content
 
 
+@named("update")
 @arg("id", help="ID of the BuildConfigurationSet to update.", type=types.existing_bc_set_id)
 @arg("-n", "--name", help="Updated name for the BuildConfigurationSet.", type=types.unique_bc_set_name)
 @arg("-pvi", "--product-version-id",
@@ -125,6 +132,7 @@ def delete_build_configuration_set_raw(id=None, name=None):
         return response.content
 
 
+@named("delete")
 @arg("-i", "--id", help="ID of the BuildConfigurationSet to delete.", type=types.existing_bc_set_id)
 @arg("-n", "--name", help="Name of the BuildConfigurationSet to delete.", type=types.existing_bc_set_name)
 # TODO: in order to delete a config set successfully, any buildconfigsetrecords must be deleted first
@@ -158,6 +166,7 @@ def build_set_raw(id=None, name=None,
         return response.content
 
 
+@named("build")
 @arg("-i", "--id", help="ID of the BuildConfigurationSet to build.", type=types.existing_bc_set_id)
 @arg("-n", "--name", help="Name of the BuildConfigurationSet to build.", type=types.existing_bc_set_name)
 @arg("--temporary-build", help="Temporary builds")
@@ -182,6 +191,7 @@ def list_build_configurations_for_set_raw(id=None, name=None, page_size=200, pag
         return response.content
 
 
+@named("list-build-configs")
 @arg("-i", "--id", help="ID of the BuildConfigurationSet to build.", type=types.existing_bc_set_id)
 @arg("-n", "--name", help="Name of the BuildConfigurationSet to build.", type=types.existing_bc_set_name)
 @arg("-p", "--page-size", help="Limit the amount of build records returned", type=int)
@@ -211,6 +221,7 @@ def add_build_configuration_to_set_raw(
         return response.content
 
 
+@named("add-build-config")
 @arg("-sid", "--set-id", help="ID of the BuildConfigurationSet to add to", type=types.existing_bc_set_id)
 @arg("-sn", "--set-name", help="Name of the BuildConfigurationSet to add to", type=types.existing_bc_set_name)
 @arg("-cid", "--config-id",
@@ -239,6 +250,7 @@ def remove_build_configuration_from_set_raw(set_id=None, set_name=None, config_i
         return response.content
 
 
+@named("remove-build-config")
 @arg("-sid", "--set-id", help="ID of the BuildConfigurationSet to remove from", type=types.existing_bc_set_id)
 @arg("-sn", "--set-name", help="Name of the BuildConfigurationSet to remove from", type=types.existing_bc_set_name)
 @arg("-cid", "--config-id", help="ID of the BuildConfiguration to remove from the set",
@@ -258,6 +270,7 @@ def list_build_records_for_set_raw(id=None, name=None, page_size=200, page_index
         return response.content
 
 
+@named("list-builds")
 @arg("-i", "--id", help="ID of the BuildConfigurationSet", type=types.existing_bc_set_id)
 @arg("-n", "--name", help="Name of the BuildConfigurationSet", type=types.existing_bc_set_name)
 @arg("-p", "--page-size", help="Limit the amount of build records returned", type=int)
@@ -280,6 +293,7 @@ def list_build_set_records_raw(id=None, name=None, page_size=200, page_index=0, 
         return response.content
 
 
+@named("list-grup-builds")
 @arg("-i", "--id", help="ID of the BuildConfigurationSet", type=types.existing_bc_set_id)
 @arg("-n", "--name", help="Name of the BuildConfigurationSet", type=types.existing_bc_set_name)
 @arg("-p", "--page-size", help="Limit the amount of build records returned", type=int)
@@ -295,6 +309,7 @@ def list_build_set_records(id=None, name=None, page_size=200, page_index=0, sort
         return utils.format_json_list(content)
 
 
+@named("status")
 @arg("-i", "--id", help="ID of the BuildConfigurationSet", type=types.existing_bc_set_id)
 @arg("-n", "--name", help="Name of the BuildConfigurationSet", type=types.existing_bc_set_name)
 def latest_build_set_records_status(id=None, name=None):

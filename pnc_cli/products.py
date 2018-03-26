@@ -1,4 +1,5 @@
 from argh import arg
+from argh import named
 from six import iteritems
 
 import pnc_cli.common as common
@@ -12,6 +13,8 @@ products_api = ProductsApi(uc.user.get_api_client())
 
 __author__ = 'thauser'
 
+namespace_kwargs = {'title': 'Products commands',
+                    'description': 'Commands related to products'}
 
 def create_product_object(**kwargs):
     created_product = ProductRest()
@@ -20,6 +23,7 @@ def create_product_object(**kwargs):
     return created_product
 
 
+@named("create")
 @arg("name", help="Name for the Product", type=types.unique_product_name)
 @arg("abbreviation", help="The abbreviation or \"short name\" of the new Product", type=types.unique_product_abbreviation)
 @arg("-d", "--description", help="Detailed description of the new Product")
@@ -42,6 +46,7 @@ def create_product_raw(name, abbreviation, **kwargs):
         return response.content
 
 
+@named("update")
 @arg("product-id", help="ID of the Product to update", type=types.existing_product_id)
 @arg("-n", "--name", help="New name for the Product", type=types.unique_product_name)
 @arg("-d", "--description", help="New Product description")
@@ -66,6 +71,7 @@ def update_product(product_id, **kwargs):
         return utils.format_json(response.content)
 
 
+@named("get")
 @arg("-i", "--id", help="ID of the Product to retrieve", type=types.existing_product_id)
 @arg("-n", "--name", help="Name of the Product to retrieve", type=types.existing_product_name)
 def get_product(id=None, name=None):
@@ -88,6 +94,7 @@ def list_versions_for_product_raw(id=None, name=None, page_size=200, page_index=
     if response:
         return response.content
 
+@named("list-versions")
 @arg("-i", "--id", help="ID of the Product to retrieve versions from", type=types.existing_product_id)
 @arg("-n", "--name", help="Name of the Product to retrieve versions from", type=types.existing_product_name)
 @arg("-p", "--page-size", help="Limit the amount of Product Versions returned", type=int)
@@ -103,6 +110,7 @@ def list_versions_for_product(id=None, name=None, page_size=200, page_index=0, s
         return utils.format_json_list(content)
 
 
+@named("list")
 @arg("-p", "--page-size", help="Limit the amount of Products returned", type=int)
 @arg("--page-index", help="Select the index of page", type=int)
 @arg("-s", "--sort", help="Sorting RSQL")

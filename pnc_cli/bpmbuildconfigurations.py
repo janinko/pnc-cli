@@ -1,4 +1,5 @@
 from argh import arg
+from argh import named
 
 import logging
 import pnc_cli.cli_types as types
@@ -19,6 +20,7 @@ def create_build_conf_object(**kwargs):
         setattr(created_build_configuration, str(key), value)
     return created_build_configuration
 
+@named("create-process")
 @arg("name", help="Name for the new BuildConfiguration.", type=types.unique_bc_name)
 # allow specifying project by name?
 @arg("project_id", help="ID of the Project to associate the BuildConfiguration with.", type=types.existing_project_id)

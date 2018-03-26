@@ -1,5 +1,6 @@
 __author__ = 'thauser'
 from argh import arg
+from argh import named
 
 import pnc_cli.cli_types as types
 from pnc_cli import utils
@@ -10,6 +11,8 @@ import pnc_cli.user_config as uc
 sets_api = BuildconfigurationsetsApi(uc.user.get_api_client())
 bcsr_api = BuildconfigsetrecordsApi(uc.user.get_api_client())
 
+namespace_kwargs = {'title': 'Build configurations commands',
+                    'description': 'Commands related to build configurations'}
 
 def list_build_configuration_set_records_raw(page_size=200, page_index=0, sort="", q=""):
     response = utils.checked_api_call(bcsr_api, 'get_all', page_size=page_size,
@@ -21,6 +24,7 @@ def list_build_configuration_set_records_raw(page_size=200, page_index=0, sort="
         return None
 
 
+@named("")
 @arg("-p", "--page-size", help="Limit the amount of build records returned")
 @arg("--page-index", help="Select the index of page", type=int)
 @arg("-s", "--sort", help="Sorting RSQL")

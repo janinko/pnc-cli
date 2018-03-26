@@ -1,4 +1,5 @@
 from argh import arg
+from argh import named
 
 import pnc_cli.common as common
 import pnc_cli.cli_types as types
@@ -12,7 +13,10 @@ records_api = BuildrecordsApi(uc.user.get_api_client())
 configs_api = BuildconfigurationsApi(uc.user.get_api_client())
 projects_api = ProjectsApi(uc.user.get_api_client())
 
+namespace_kwargs = {'title': 'Build records commands',
+                    'description': 'Commands related to build records'}
 
+@named("list")
 @arg("-p", "--page-size", help="Limit the amount of BuildRecords returned", type=int)
 @arg("--page-index", help="Select the index of page", type=int)
 @arg("-s", "--sort", help="Sorting RSQL")
@@ -26,6 +30,7 @@ def list_build_records(page_size=200, page_index=0, sort="", q=""):
         return utils.format_json_list(response.content)
 
 
+@named("list-by-build-configuration")
 @arg("-i", "--id", help="BuildConfiguration ID to retrieve BuildRecords of.", type=types.existing_bc_id)
 @arg("-n", "--name", help="BuildConfiguration name to retrieve BuildRecords of.", type=types.existing_bc_name)
 @arg("-p", "--page-size", help="Limit the amount of BuildRecords returned", type=int)
@@ -43,6 +48,7 @@ def list_records_for_build_configuration(id=None, name=None, page_size=200, page
         return utils.format_json_list(response.content)
 
 
+@named("list-by-project")
 @arg("-i", "--id", help="Project ID to retrieve BuildRecords of.")
 @arg("-n", "--name", help="Project name to retrieve BuildRecords of.")
 @arg("-p", "--page-size", help="Limit the amount of BuildRecords returned")
@@ -60,6 +66,7 @@ def list_records_for_project(id=None, name=None, page_size=200, page_index=0, so
         return utils.format_json_list(response.content)
 
 
+@named("get")
 @arg("id", help="BuildRecord ID to retrieve.", type=types.existing_build_record)
 def get_build_record(id):
     """
@@ -70,6 +77,7 @@ def get_build_record(id):
         return utils.format_json(response.content)
 
 
+@named("list-built-artifacts")
 @arg("id", help="BuildRecord ID to retrieve artifacts from.", type=types.existing_build_record)
 @arg("-p", "--page-size", help="Limit the amount of Artifacts returned", type=int)
 @arg("--page-index", help="Select the index of page", type=int)
@@ -85,6 +93,7 @@ def list_built_artifacts(id, page_size=200, page_index=0, sort="", q=""):
         return utils.format_json_list(response.content)
 
 
+@named("list-dependency-artifacts")
 @arg("id", help="BuildRecord ID to retrieve dependency Artifacts from.", type=types.existing_build_record)
 @arg("-p", "--page-size", help="Limit the amount of Artifacts returned", type=int)
 @arg("--page-index", help="Select the index of page", type=int)
@@ -100,6 +109,7 @@ def list_dependency_artifacts(id, page_size=200, page_index=0, sort="", q=""):
         return utils.format_json_list(response.content)
 
 
+@named("get-audited-configuration")
 @arg("id", help="BuildRecord ID to retrieve audited BuildConfiguration from.", type=types.existing_build_record)
 def get_audited_configuration_for_record(id):
     """
@@ -110,6 +120,7 @@ def get_audited_configuration_for_record(id):
         return utils.format_json(response.content)
 
 
+@named("get-build-log")
 @arg("id", help="BuildRecord ID to retrieve the log from.", type=types.existing_build_record)
 def get_log_for_record(id):
     """
@@ -120,6 +131,7 @@ def get_log_for_record(id):
         return response
 
 
+@named("list-artifacts")
 @arg("id", help="BuildRecord ID to retrieve Artifacts from.", type=types.existing_build_record)
 @arg("-p", "--page-size", help="Limit the amount of Artifacts returned", type=int)
 @arg("--page-index", help="Select the index of page", type=int)
@@ -131,6 +143,7 @@ def list_artifacts(id, page_size=200, page_index=0, sort="", q=""):
         return utils.format_json_list(response.content)
 
 
+@named("add-attribute")
 @arg("id", help="BuildRecord ID to add an Attribute to.", type=types.existing_build_record)
 @arg("key", help="Key for the Attribute.")
 @arg("value", help="Value for the Attribute.")
@@ -138,12 +151,14 @@ def put_attribute(id, key, value):
     utils.checked_api_call(records_api, 'put_attribute', id=id, key=key, value=value)
 
 
+@named("remove-attribute")
 @arg("id", help="BuildRecord ID to remove an Attribute from.", type=types.existing_build_record)
 @arg("key", help="Key of the Attribute to remove.")
 def remove_attribute(id, key):
     utils.checked_api_call(records_api, 'remove_attribute', id=id, key=key)
 
 
+@named("list-by-attribute")
 @arg("key", help="Key of the Attribute to query BuildRecords for.")
 @arg("value", help="Value of the Attribute to query BuildRecords for.")
 def query_by_attribute(key, value):
@@ -152,6 +167,7 @@ def query_by_attribute(key, value):
         return utils.format_json(response)
 
 
+@named("list-attributes")
 @arg("id", help="BuildRecord ID to list Attributes of.", type=types.existing_build_record)
 def list_attributes(id):
     response = utils.checked_api_call(records_api, 'get_attributes', id=id)

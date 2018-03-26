@@ -1,5 +1,6 @@
 import argh
 from argh import arg
+from argh import named
 from six import iteritems
 
 import pnc_cli.common as common
@@ -11,6 +12,8 @@ import pnc_cli.user_config as uc
 
 projects_api = ProjectsApi(uc.user.get_api_client())
 
+namespace_kwargs = {'title': 'Projects commands',
+                    'description': 'Commands related to projects'}
 
 def _create_project_object(**kwargs):
     created_project = ProjectRest()
@@ -28,6 +31,7 @@ def create_project_raw(**kwargs):
     if response:
         return response.content
 
+@named("create")
 @arg("name", help="Name for the Project", type=types.unique_project_name)
 @arg("-d", "--description", help="Detailed description of the new Project")
 @arg("-p", "--project-url", help="SCM Url for the Project", type=types.valid_url)
@@ -42,6 +46,7 @@ def create_project(**kwargs):
         return utils.format_json(content)
 
 
+@named("update")
 @arg("id", help="ID for the Project that will be updated.", type=types.existing_project_id)
 @arg("-n", "--name", help="New name for the Project that will be updated.", type=types.unique_project_name)
 @arg("-d", "--description", help="Detailed description of the new Project.")
@@ -75,6 +80,7 @@ def get_project_raw(id=None, name=None):
     if response:
         return response.content
 
+@named("get")
 @arg("-id", "--id", help="ID of the Project to retrieve", type=types.existing_project_id)
 @arg("-n", "--name", help="Name of the Project to retrieve", type=types.existing_project_name)
 def get_project(id=None, name=None):
@@ -86,6 +92,7 @@ def get_project(id=None, name=None):
         return utils.format_json(content)
 
 
+@named("delete")
 @arg("-id", "--id", help="ID of the Project to delete", type=types.existing_project_id)
 @arg("-n", "--name", help="Name of the Project to delete", type=types.existing_project_name)
 def delete_project(id=None, name=None):
@@ -98,6 +105,7 @@ def delete_project(id=None, name=None):
         return utils.format_json(response.content)
 
 
+@named("list")
 @arg("-p", "--page-size", help="Limit the amount of Projects returned", type=int)
 @arg("--page-index", help="Select the index of page", type=int)
 @arg("-s", "--sort", help="Sorting RSQL")
