@@ -16,6 +16,7 @@ projects_api = ProjectsApi(uc.user.get_api_client())
 namespace_kwargs = {'title': 'Build records commands',
                     'description': 'Commands related to build records'}
 
+
 @named("list")
 @arg("-p", "--page-size", help="Limit the amount of BuildRecords returned", type=int)
 @arg("--page-index", help="Select the index of page", type=int)

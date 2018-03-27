@@ -22,6 +22,7 @@ configs_api = BuildconfigurationsApi(uc.user.get_api_client())
 namespace_kwargs = {'title': 'Build group configurations commands',
                     'description': 'Commands related to build group configurations'}
 
+
 def _create_build_config_set_object(**kwargs):
     created_build_config_set = swagger_client.BuildConfigurationSetRest()
     for key, value in iteritems(kwargs):
@@ -35,6 +36,7 @@ def list_build_configuration_sets_raw(page_size=200, page_index=0, sort="", q=""
 
     if response:
         return response.content
+
 
 @named("list")
 @arg("-p", "--page-size", help="Limit the amount of build records returned", type=int)
@@ -84,6 +86,7 @@ def get_build_configuration_set_raw(id=None, name=None):
     response = utils.checked_api_call(sets_api, 'get_specific', id=found_id)
     if response:
         return response.content
+
 
 @named("get")
 @arg("-id", "--id", help="ID of the BuildConfigurationSet to retrieve", type=types.existing_bc_set_id)

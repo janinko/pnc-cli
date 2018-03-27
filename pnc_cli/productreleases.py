@@ -1,4 +1,5 @@
 from argh import arg
+from argh import named
 from six import iteritems
 
 import pnc_cli.cli_types as types
@@ -12,6 +13,9 @@ import pnc_cli.user_config as uc
 productversions_api = ProductversionsApi(uc.user.get_api_client())
 releases_api = ProductreleasesApi(uc.user.get_api_client())
 
+namespace_kwargs = {'title': 'Product releases commands',
+                    'description': 'Commands related to product releases'}
+
 
 def create_product_release_object(**kwargs):
     created_release = ProductReleaseRest()
@@ -20,6 +24,7 @@ def create_product_release_object(**kwargs):
     return created_release
 
 
+@named("list")
 @arg("-p", "--page-size", help="Limit the amount of ProductReleases returned", type=int)
 @arg("--page-index", help="Select the index of page", type=int)
 @arg("-s", "--sort", help="Sorting RSQL")
@@ -38,6 +43,7 @@ def list_product_releases(page_size=200, page_index=0, sort="", q=""):
 # version is created by appending product_version.<new info>
 
 
+@named("create")
 @arg("version", help="Version of the release. Appended to the ProductVersion's version.",
      type=types.valid_version_create)
 @arg("release_date", help="Date of the release. Format: yyyy-mm-dd", type=types.valid_date)
@@ -71,6 +77,7 @@ def create_release(**kwargs):
         return utils.format_json(response.content)
 
 
+@named("list-by-product-version")
 @arg("id", help="ProductVersion ID to retrieve releases for.", type=types.existing_product_version)
 def list_releases_for_version(id):
     """
@@ -82,6 +89,7 @@ def list_releases_for_version(id):
         return utils.format_json_list(response.content)
 
 
+@named("get")
 @arg("id", help="ID of the ProductRelease to retrieve.", type=types.existing_product_release)
 def get_release(id):
     """
@@ -92,6 +100,7 @@ def get_release(id):
         return utils.format_json(response.content)
 
 
+@named("update")
 @arg("id", help="ID of the release to update.", type=types.existing_product_release)
 @arg("-v", "--version", help="Version of the release. Appended to the ProductVersion.", type=types.valid_version_update)
 @arg("-rd", "--release-date", help="Date of the release.", type=types.valid_date)

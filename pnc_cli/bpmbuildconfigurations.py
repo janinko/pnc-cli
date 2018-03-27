@@ -20,6 +20,7 @@ def create_build_conf_object(**kwargs):
         setattr(created_build_configuration, str(key), value)
     return created_build_configuration
 
+
 @named("create-process")
 @arg("name", help="Name for the new BuildConfiguration.", type=types.unique_bc_name)
 # allow specifying project by name?

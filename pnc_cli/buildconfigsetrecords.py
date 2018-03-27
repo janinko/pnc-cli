@@ -11,8 +11,9 @@ import pnc_cli.user_config as uc
 sets_api = BuildconfigurationsetsApi(uc.user.get_api_client())
 bcsr_api = BuildconfigsetrecordsApi(uc.user.get_api_client())
 
-namespace_kwargs = {'title': 'Build configurations commands',
-                    'description': 'Commands related to build configurations'}
+namespace_kwargs = {'title': 'Group builds commands',
+                    'description': 'Commands related to group builds'}
+
 
 def list_build_configuration_set_records_raw(page_size=200, page_index=0, sort="", q=""):
     response = utils.checked_api_call(bcsr_api, 'get_all', page_size=page_size,
@@ -24,7 +25,7 @@ def list_build_configuration_set_records_raw(page_size=200, page_index=0, sort="
         return None
 
 
-@named("")
+@named("list")
 @arg("-p", "--page-size", help="Limit the amount of build records returned")
 @arg("--page-index", help="Select the index of page", type=int)
 @arg("-s", "--sort", help="Sorting RSQL")
@@ -46,6 +47,7 @@ def get_build_configuration_set_record_raw(id):
         return None
 
 
+@named("get")
 @arg("id", help="ID of build configuration set record to retrieve.", type=types.existing_bc_set_record)
 def get_build_configuration_set_record(id):
     """
@@ -64,6 +66,7 @@ def list_records_for_build_config_set_raw(id, page_size=200, page_index=0, sort=
         return None
 
 
+@named("list-by-build-group-config")
 @arg("id", help="ID of BuildConfigSetRecord to retrieve build records from.", type=types.existing_bc_set_record)
 @arg("-p", "--page-size", help="Limit the amount of build records returned", type=int)
 @arg("--page-index", help="Select the index of page", type=int)

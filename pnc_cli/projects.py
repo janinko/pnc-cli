@@ -15,6 +15,7 @@ projects_api = ProjectsApi(uc.user.get_api_client())
 namespace_kwargs = {'title': 'Projects commands',
                     'description': 'Commands related to projects'}
 
+
 def _create_project_object(**kwargs):
     created_project = ProjectRest()
     for key, value in iteritems(kwargs):
@@ -30,6 +31,7 @@ def create_project_raw(**kwargs):
     response = utils.checked_api_call(projects_api, 'create_new', body=project)
     if response:
         return response.content
+
 
 @named("create")
 @arg("name", help="Name for the Project", type=types.unique_project_name)
@@ -79,6 +81,7 @@ def get_project_raw(id=None, name=None):
     response = utils.checked_api_call(projects_api, 'get_specific', id=proj_id)
     if response:
         return response.content
+
 
 @named("get")
 @arg("-id", "--id", help="ID of the Project to retrieve", type=types.existing_project_id)

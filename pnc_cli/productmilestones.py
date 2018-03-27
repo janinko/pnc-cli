@@ -4,6 +4,7 @@ import logging
 import time
 
 from argh import arg
+from argh import named
 from six import iteritems
 
 import pnc_cli.cli_types as types
@@ -15,6 +16,9 @@ import pnc_cli.user_config as uc
 
 productversions_api = ProductversionsApi(uc.user.get_api_client())
 milestones_api = ProductmilestonesApi(uc.user.get_api_client())
+
+namespace_kwargs = {'title': 'Product milestones commands',
+                    'description': 'Commands related to product milestones'}
 
 
 def create_milestone_object(**kwargs):
@@ -39,6 +43,7 @@ def unique_version_value(parent_product_version_id, version):
             raise argparse.ArgumentTypeError("Error: version already being used for another milestone")
 
 
+@named("list")
 @arg("-p", "--page-size", help="Limit the amount of ProductReleases returned", type=int)
 @arg("--page-index", help="Select the index of page", type=int)
 @arg("-s", "--sort", help="Sorting RSQL")
@@ -52,6 +57,7 @@ def list_milestones(page_size=200, page_index=0, q="", sort=""):
         return utils.format_json_list(response.content)
 
 
+@named("create")
 @arg("product_version_id", help="ID of the ProductVersion to create a ProductMilestone from.",
      type=types.existing_product_version)
 @arg("version", help="Version of the ProductMilestone. Will be appended to the version from product_version_id.",
@@ -80,6 +86,7 @@ def create_milestone(**kwargs):
         return utils.format_json(response.content)
 
 
+@named("list-by-product-version")
 @arg("id", help="ProductVersion ID to retrieve milestones for.", type=types.existing_product_version)
 def list_milestones_for_version(id):
     """
@@ -93,12 +100,14 @@ def list_milestones_for_version(id):
         return utils.format_json_list(response.content)
 
 
+@named("get")
 @arg("id", help="ProductMilestone ID to retrieve.", type=types.existing_product_milestone)
 def get_milestone(id):
     response = utils.checked_api_call(milestones_api, 'get_specific', id=id)
     return utils.format_json(response.content)
 
 
+@named("update")
 @arg("id", help="ProductMilestone ID to update.", type=types.existing_product_milestone)
 @arg("-v", "--version", help="New version for the ProductMilestone.", type=types.valid_version_update)
 @arg("-sd", "--starting-date", help="New start date for the ProductMilestone.", type=types.valid_date)
@@ -131,6 +140,7 @@ def update_milestone(id, **kwargs):
         return utils.format_json(response.content)
 
 
+@named("close")
 @arg("id", help="ProductMilestone ID to update.", type=types.existing_product_milestone)
 @arg("-w", "--wait", help="Wait for release process to finish", action='store_true')
 def close_milestone(id, **kwargs):
@@ -168,6 +178,7 @@ def close_milestone(id, **kwargs):
         return utils.format_json(response.content)
 
 
+@named("list-distributed-artifacts")
 @arg("id", help="ID of the ProductMilestone to list distributed artifacts for.", type=types.existing_product_milestone)
 @arg("-p", "--page-size", help="Limit the amount of distributed artifacts returned", type=int)
 @arg("--page-index", help="Select the index of page", type=int)
@@ -193,6 +204,7 @@ def remove_distributed_artifact():
     pass
 
 
+@named("list-distributed-builds")
 @arg("id", help="ID of the ProductMilestone to list distributed builds for.", type=types.existing_product_milestone)
 @arg("-p", "--page-size", help="Limit the amount of distributed builds returned", type=int)
 @arg("--page-index", help="Select the index of page", type=int)

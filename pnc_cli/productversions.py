@@ -19,6 +19,7 @@ __author__ = 'thauser'
 namespace_kwargs = {'title': 'Product versions commands',
                     'description': 'Commands related to Product versions'}
 
+
 def create_product_version_object(**kwargs):
     created_version = swagger_client.ProductVersionRest()
     for key, value in iteritems(kwargs):

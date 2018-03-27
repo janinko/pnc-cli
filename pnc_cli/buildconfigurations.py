@@ -27,6 +27,7 @@ products_api = ProductsApi(uc.user.get_api_client())
 namespace_kwargs = {'title': 'Build configurations commands',
                     'description': 'Commands related to build configurations'}
 
+
 def create_build_conf_object(**kwargs):
     created_build_configuration = swagger_client.BuildConfigurationRest()
     for key, value in kwargs.items():
@@ -68,6 +69,7 @@ def config_id_exists(search_id):
     if not response:
         return False
     return True
+
 
 @named("build")
 @arg("-i", "--id", help="ID of the BuildConfiguration to trigger.", type=types.existing_bc_id)
@@ -257,6 +259,7 @@ def list_build_configurations_for_product(id=None, name=None, page_size=200, pag
                                       sort=sort, q=q)
     if response:
         return utils.format_json_list(response.content)
+
 
 @named("list-by-project")
 @arg("-i", "--id", help="ID of the Project to list BuildConfigurations for.", type=int)

@@ -1,5 +1,6 @@
 import logging
 from argh import arg
+from argh import named
 
 from pnc_cli import utils
 from pnc_cli.swagger_client import RunningbuildrecordsApi
@@ -10,6 +11,7 @@ import pnc_cli.user_config as uc
 running_api = RunningbuildrecordsApi(uc.user.get_api_client())
 
 
+@named("list-running")
 @arg("-p", "--page-size", help="Limit the amount of BuildRecords returned")
 @arg("--page-index", help="Select the index of page", type=int)
 @arg("-s", "--sort", help="Sorting RSQL")
@@ -22,6 +24,7 @@ def list_running_builds(page_size=200, page_index=0, sort=""):
         return utils.format_json_list(response.content)
 
 
+@named("get-running")
 @arg("id", help="ID of the RunningBuild to retrieve.", type=cli_types.existing_running_build)
 def get_running_build(id):
     """

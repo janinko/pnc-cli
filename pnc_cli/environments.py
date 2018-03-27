@@ -1,6 +1,7 @@
 import argparse
 
 from argh import arg
+from argh import named
 from six import iteritems
 
 import pnc_cli.cli_types as types
@@ -13,6 +14,9 @@ from pnc_cli.swagger_client import EnvironmentsApi
 envs_api = EnvironmentsApi(uc.user.get_api_client())
 
 __author__ = 'thauser'
+
+namespace_kwargs = {'title': 'Environments commands',
+                    'description': 'Commands related to environments'}
 
 
 def create_environment_object(**kwargs):
@@ -37,6 +41,7 @@ def unique_iid(iidInput):
     return iidInput
 
 
+@named("create")
 @arg("name", help="Unique name of the BuildEnvironment", type=types.unique_environment_name)
 @arg("system_image_id", help="ID of the Docker image for this BuildEnvironment.", type=unique_iid)
 @arg("system_image_type", help="One of DOCKER_IMAGE, VIRTUAL_MACHINE_RAW, VIRTUAL_MACHINE_QCOW2, LOCAL_WORKSPACE",
@@ -54,6 +59,7 @@ def create_environment(**kwargs):
         return utils.format_json(response.content)
 
 
+@named("update")
 @arg("id", help="ID of the environment to update.", type=types.existing_environment_id)
 @arg("-s", "--system-image-type", help="Updated system image type for the new BuildEnvironment.")
 @arg("-d", "--description", help="Updated description of the BuildEnvironment.")
@@ -76,6 +82,7 @@ def update_environment(id, **kwargs):
         return utils.format_json(response.content)
 
 
+@named("delete")
 @arg("-i", "--id", help="ID of the BuildEnvironment to delete.", type=types.existing_environment_id)
 @arg("-n", "--name", help="Name of the BuildEnvironment to delete.", type=types.existing_environment_name)
 def delete_environment(id=None, name=None):
@@ -96,6 +103,7 @@ def get_environment_raw(id=None, name=None):
     return response.content
 
 
+@named("get")
 @arg("-i", "--id", help="ID of the BuildEnvironment to retrieve.", type=types.existing_environment_id)
 @arg("-n", "--name", help="Name of the BuildEnvironment to retrieve.", type=types.existing_environment_name)
 def get_environment(id=None, name=None):
@@ -107,6 +115,7 @@ def get_environment(id=None, name=None):
     return utils.format_json(response.content)
 
 
+@named("list")
 @arg("-p", "--page-size", help="Limit the amount of BuildEnvironments returned", type=int)
 @arg("--page-index", help="Select the index of page", type=int)
 @arg("-s", "--sort", help="Sorting RSQL")

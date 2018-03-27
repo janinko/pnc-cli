@@ -94,6 +94,7 @@ def list_versions_for_product_raw(id=None, name=None, page_size=200, page_index=
     if response:
         return response.content
 
+
 @named("list-versions")
 @arg("-i", "--id", help="ID of the Product to retrieve versions from", type=types.existing_product_id)
 @arg("-n", "--name", help="Name of the Product to retrieve versions from", type=types.existing_product_name)

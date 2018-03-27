@@ -1,4 +1,5 @@
 from argh import arg
+from argh import named
 from argh.exceptions import CommandError
 
 import logging
@@ -11,6 +12,11 @@ import pnc_cli.user_config as uc
 
 repos_api = RepositoryconfigurationsApi(uc.user.get_api_client())
 
+namespace_kwargs = {'title': 'Repositories commands',
+                    'description': 'Commands related to repositories'}
+
+
+@named("get")
 @arg("id", help="ID of the RepositoryConfiguration to retrieve.", type=types.existing_bc_id)
 def get_repository_configuration(id):
     """
@@ -22,6 +28,7 @@ def get_repository_configuration(id):
         return response.content
 
 
+@named("update")
 @arg("id", help="ID of the RepositoryConfiguration to update.", type=types.existing_rc_id)
 @arg("-e", "--external-repository", help="URL to the external sources repository.", type=types.valid_url)
 @arg("-s", "--prebuild-sync", help="Pre-build source synchronization.", type=types.t_or_f)
@@ -48,6 +55,8 @@ def update_repository_configuration(id, external_repository=None, prebuild_sync=
     if response:
         return response.content
 
+
+@named("create")
 @arg("repository", help="URL to the internal sources repository.", type=types.valid_url)
 @arg("-e", "--external-repository", help="URL to the external sources repository.", type=types.valid_url)
 @arg("-s", "--prebuild-sync", help="Pre-build source synchronization.", type=types.t_or_f)
@@ -76,6 +85,8 @@ def create_repository_configuration(repository, external_repository=None, prebui
     if response:
         return utils.format_json(response.content)
 
+
+@named("list")
 @arg("-p", "--page-size", help="Limit the amount of repository configurations returned", type=int)
 @arg("--page-index", help="Select the index of page", type=int)
 @arg("-s", "--sort", help="Sorting RSQL")
@@ -88,6 +99,8 @@ def list_repository_configurations(page_size=200, page_index=0, sort="", q=""):
     if response:
         return utils.format_json_list(response.content)
 
+
+@named("search-by-url")
 @arg("url", help="Url part to search for.")
 @arg("-p", "--page-size", help="Limit the amount of repository configurations returned", type=int)
 @arg("--page-index", help="Select the index of page", type=int)
@@ -108,6 +121,8 @@ def search_repository_configuration_raw(url, page_size=10, page_index=0, sort=""
     if response:
         return response.content
 
+
+@named("list-by-url")
 @arg("url", help="Url to search for.")
 @arg("-p", "--page-size", help="Limit the amount of repository configurations returned", type=int)
 @arg("--page-index", help="Select the index of page", type=int)

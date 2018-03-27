@@ -19,6 +19,7 @@ projects_api = ProjectsApi(uc.user.get_api_client())
 namespace_kwargs = {'title': 'Brew push commands',
                     'description': 'Commands related to pushing to Brew'}
 
+
 @named("build")
 @arg("id", help="Build record ID to push to Brew.", type=types.existing_build_record)
 @arg("tag_prefix", help="Brew tag to which push the build. It will have -candidate suffix.", type=str)
