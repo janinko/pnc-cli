@@ -4,10 +4,9 @@ import pytest
 
 from pnc_cli import buildconfigurations
 from pnc_cli import productversions
-from pnc_cli.swagger_client import BuildconfigurationsApi
-from pnc_cli.swagger_client import RunningbuildrecordsApi
 from test import testutils
 import pnc_cli.user_config as uc
+from pnc_cli.pnc_api import pnc_api
 
 
 current_time_millis = lambda: int(round(time.time() * 1000))
@@ -16,7 +15,7 @@ current_time_millis = lambda: int(round(time.time() * 1000))
 @pytest.fixture(scope='function', autouse=True)
 def get_configs_api():
     global configs_api
-    configs_api = BuildconfigurationsApi(uc.user.get_api_client())
+    configs_api = pnc_api.build_configs
 
 
 def test_get_all_invalid_params():
@@ -57,7 +56,7 @@ def test_trigger_invalid_params():
 
 
 def test_trigger(new_config):
-    running_api = RunningbuildrecordsApi(uc.user.get_api_client())
+    running_api = pnc_api.running_builds
     triggered_build = configs_api.trigger(id=new_config.id).content
     assert triggered_build is not None
     build_record = running_api.get_specific(id=triggered_build.id)
@@ -239,9 +238,9 @@ def test_remove_dependency_invalid_param():
 
 def test_dependency_operations(new_config):
     # again detect environment
-    if "stage" in uc.user.pnc_config.url:
+    if "stage" in uc.get_user().pnc_config.url:
         repo_url = 'git+ssh://pnc-gerrit-stage@code-stage.eng.nay.redhat.com:29418/productization/github.com/pnc-simple-test-project.git'
-    elif "devel" in uc.user.pnc_config.url:
+    elif "devel" in uc.get_user().pnc_config.url:
         repo_url = 'git+ssh://user-pnc-gerrit@pnc-gerrit.pnc.dev.eng.bos.redhat.com:29418/productization/github.com/pnc-simple-test-project.git'
 
     depname = testutils.gen_random_name()

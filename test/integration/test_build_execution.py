@@ -11,12 +11,8 @@ import pytest
 from git import Repo
 
 from pnc_cli import utils
-from pnc_cli.swagger_client.apis.buildconfigurations_api import BuildconfigurationsApi
-from pnc_cli.swagger_client.apis.runningbuildrecords_api import RunningbuildrecordsApi
-from pnc_cli.swagger_client.apis.buildconfigurationsets_api import BuildconfigurationsetsApi
-from pnc_cli.swagger_client.apis.buildrecords_api import BuildrecordsApi
 from test.integration.conftest import new_config, create_config
-import pnc_cli.user_config as uc
+from pnc_cli.pnc_api import pnc_api
 
 # setup logging to print timestamps
 logging.basicConfig(format='[%(asctime)s %(levelname)s] %(message)s')
@@ -32,25 +28,25 @@ BUILD_STATUS_DONE = 'DONE'
 @pytest.fixture(scope='function', autouse=True)
 def get_running_api():
     global running_api
-    running_api = RunningbuildrecordsApi(uc.user.get_api_client())
+    running_api = pnc_api.running_builds
 
 
 @pytest.fixture(scope='function', autouse=True)
 def get_configs_api():
     global configs_api
-    configs_api = BuildconfigurationsApi(uc.user.get_api_client())
+    configs_api = pnc_api.build_configs
 
 
 @pytest.fixture(scope='function', autouse=True)
 def get_sets_api():
     global sets_api
-    sets_api = BuildconfigurationsetsApi(uc.user.get_api_client())
+    sets_api = pnc_api.build_group_configs
 
 
 @pytest.fixture(scope='function', autouse=True)
 def get_records_api():
     global records_api
-    records_api = BuildrecordsApi(uc.user.get_api_client())
+    records_api = pnc_api.builds
 
 
 def test_run_single_build(new_config):

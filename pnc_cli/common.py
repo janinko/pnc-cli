@@ -1,4 +1,5 @@
 import argh.exceptions
+import logging
 
 import pnc_cli.utils as utils
 
@@ -26,6 +27,7 @@ def get_id_by_name(api, search_name):
     :return ID of entity matching search_name, None otherwise
     """
     entities = api.get_all(q='name==' + "'" + search_name + "'").content
+    logging.debug('Got entities by name: %s', entities)
     if entities:
         return entities[0].id
     return

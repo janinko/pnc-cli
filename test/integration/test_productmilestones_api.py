@@ -2,21 +2,19 @@ import pytest
 from pnc_cli.swagger_client import ArtifactRest
 
 __author__ = 'thauser'
-from pnc_cli.swagger_client.apis import BuildrecordsApi
-from pnc_cli.swagger_client.apis import ProductmilestonesApi
 from test import testutils
-import pnc_cli.user_config as uc
+from pnc_cli.pnc_api import pnc_api
 
 
 @pytest.fixture(scope='function', autouse=True)
 def get_milestone_api():
     global milestone_api
-    milestone_api = ProductmilestonesApi(uc.user.get_api_client())
+    milestone_api = pnc_api.product_milestones
 
 @pytest.fixture(scope='function', autouse=True)
 def get_records_api():
     global records_api
-    records_api = BuildrecordsApi(uc.user.get_api_client())
+    records_api = pnc_api.builds
 
 
 def test_get_all_invalid_param():

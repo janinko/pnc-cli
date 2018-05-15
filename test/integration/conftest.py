@@ -11,6 +11,7 @@ from pnc_cli import productreleases
 from pnc_cli import products
 from pnc_cli import productversions
 from pnc_cli import projects
+from pnc_cli import repositoryconfigurations
 from test import testutils
 
 
@@ -54,25 +55,31 @@ def contains_event_type(events, types):
             return True
     return False
 
-@pytest.fixture(scope='function')
-def new_config(request, new_project, new_version):
-    created_bc = create_config(request, new_project, new_version, 1)
-    return created_bc
-
-
-def create_config(request, new_project, new_version, project_number):
+def new_repository(project_number):
     if (project_number == 2):
         ending = '-2'
     elif (project_number == 3):
         ending = '-3'
     else:
         ending = ''
+    repo_url = 'git+ssh://code.stage.engineering.redhat.com/productization/github.com/pnc-simple-test-project'+ending+'.git'
 
-    # detect our environment to assign appropriate internal repository
-    if "stage" in uc.user.pnc_config.url:
-        repo_url = 'git+ssh://pnc-gerrit-stage@code-stage.eng.nay.redhat.com:29418/productization/github.com/pnc-simple-test-project'+ending+'.git'
-    elif "devel" in uc.user.pnc_config.url:
-        repo_url = 'git+ssh://user-pnc-gerrit@pnc-gerrit.pnc.dev.eng.bos.redhat.com:29418/productization/github.com/pnc-simple-test-project'+ending+'.git'
+    content = repositoryconfigurations.match_repository_configuration_raw(repo_url)
+    if content:
+        return content[0]
+    return repositoryconfigurations.create_repository_configuration_raw(repo_url,prebuild_sync=False)
+
+@pytest.fixture(scope='function')
+def new_config(request, new_project, new_version):
+    print("request: ", request)
+    print("new_project: ", new_project)
+    print("new_version: ", new_version)
+    created_bc = create_config(request, new_project, new_version, 1)
+    return created_bc
+
+
+def create_config(request, new_project, new_version, project_number):
+    rc = new_repository(project_number)
 
     # detect an appropriate environment
     available_environments = environments.list_environments_raw()
@@ -86,8 +93,6 @@ def create_config(request, new_project, new_version, project_number):
             env_id = x.id
             break
 
-
-
     bc_name = testutils.gen_random_name() + '-config'
     created_bc = buildconfigurations.create_build_configuration_raw(
         name=bc_name,
@@ -95,9 +100,9 @@ def create_config(request, new_project, new_version, project_number):
         environment=env_id,
         build_script='mvn deploy',
         product_version_id=new_version.id,
-        scm_repo_url=repo_url,
-        scm_revision='master',
-        repository_configuration=1)
+        repository_configuration=rc.id,
+        scm_revision='master')
+    print("created: ", created_bc)
 
     def teardown():
         buildconfigurations.delete_build_configuration_raw(id=created_bc.id)

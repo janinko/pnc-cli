@@ -5,8 +5,7 @@ from test.integration.conftest import new_config
 from pnc_cli import buildconfigurationsets
 from pnc_cli import utils
 from test import testutils
-from pnc_cli.swagger_client.apis.buildconfigurationsets_api import BuildconfigurationsetsApi
-import pnc_cli.user_config as uc
+from pnc_cli.pnc_api import pnc_api
 
 __author__ = 'thauser'
 
@@ -14,7 +13,7 @@ __author__ = 'thauser'
 @pytest.fixture(scope='function', autouse=True)
 def get_sets_api():
     global sets_api
-    sets_api = BuildconfigurationsetsApi(uc.user.get_api_client())
+    sets_api = pnc_api.build_groups_configs
 
 
 def test_get_all_invalid_param():

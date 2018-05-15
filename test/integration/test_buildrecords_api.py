@@ -1,21 +1,19 @@
 
 import pytest
 
-from pnc_cli.swagger_client.apis.buildrecords_api import BuildrecordsApi
-from pnc_cli.swagger_client.apis.buildconfigurations_api import BuildconfigurationsApi
 from test import testutils
-import pnc_cli.user_config as uc
+from pnc_cli.pnc_api import pnc_api
 
 
 @pytest.fixture(scope='function', autouse=True)
 def get_builds_api():
     global builds_api
-    builds_api = BuildrecordsApi(uc.user.get_api_client())
+    builds_api = pnc_api.builds
 
 @pytest.fixture(scope='function', autouse=True)
 def get_configs_api():
     global configs_api
-    configs_api = BuildconfigurationsApi(uc.user.get_api_client())
+    configs_api = pnc_api.build_configs
 
 def test_get_all_invalid_param():
     testutils.assert_raises_typeerror(builds_api, 'get_all')

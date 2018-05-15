@@ -1,15 +1,14 @@
 import pytest
 
 from pnc_cli import projects
-from pnc_cli.swagger_client.apis.projects_api import ProjectsApi
 from test import testutils
-import pnc_cli.user_config as uc
+from pnc_cli.pnc_api import pnc_api
 
 
 @pytest.fixture(scope='function', autouse=True)
 def get_projects_api():
     global projects_api
-    projects_api = ProjectsApi(uc.user.get_api_client())
+    projects_api = pnc_api.projects
 
 
 def test_get_all_invalid_param():
