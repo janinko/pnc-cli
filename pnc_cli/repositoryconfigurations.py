@@ -53,8 +53,11 @@ def create_repository_configuration(repository, external_repository=None, prebui
     """
     Create a new RepositoryConfiguration.
     """
+    content = create_repository_configuration_raw(repository, external_repositor, prebuild_sync)
+    if content:
+        return utils.format_json(content)
 
-    print("s: %s", prebuild_sync)
+def create_repository_configuration_raw(repository, external_repository=None, prebuild_sync=None):
 
     if external_repository is None and prebuild_sync:
         logging.error("You cannot enable prebuild sync without external repository")
@@ -72,7 +75,7 @@ def create_repository_configuration(repository, external_repository=None, prebui
     response = utils.checked_api_call(
         pnc_api.repositories, 'create_new', body=repository_configuration)
     if response:
-        return utils.format_json(response.content)
+        return response.content
 
 @arg("-p", "--page-size", help="Limit the amount of repository configurations returned", type=int)
 @arg("--page-index", help="Select the index of page", type=int)
